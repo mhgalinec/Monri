@@ -3,4 +3,5 @@
   <Project Path="Monri.Core/Monri.Core.csproj" />
   <Project Path="Monri.Data/Monri.Data.csproj" />
   <Project Path="Monri.MVC/Monri.MVC.csproj" />
+  <Project Path="Monri.Tests/Monri.Tests.csproj" Id="3f41479b-85e5-4496-b3c5-e256137564bc" />
 </Solution>

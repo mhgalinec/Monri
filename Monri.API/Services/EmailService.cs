@@ -61,12 +61,12 @@ namespace Monri.API.Services
             {
                 await client.SendMailAsync(mail);
                 _logger.LogInformation($"Email sent for {user.Email}");
-                return true;
+                return Result.Success(true);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occured while sending an email to {user.Email}");
-                return false;
+                return Result.Failure<bool>(Error.Exception);
             }
         }
     }
