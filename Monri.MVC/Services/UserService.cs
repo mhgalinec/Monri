@@ -28,12 +28,13 @@ namespace Monri.MVC.Services
             try
             {
                 var endpoint = $"{_appSettings.BaseUrl}{_appSettings.InsertUser}";
+                _logger.LogError("Trying to do a post request to " + endpoint);
                 return await _httpClientProviderService.PostRequest<int, UserDTO>(endpoint, userDTO);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Something went wrong");
-                return Result.Failure<int>(Error.FromException(e));
+                return Result.Failure<int>(new Error(212,e.Message));
             }
         }
     }

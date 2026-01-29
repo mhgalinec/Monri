@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
   <Project Path="Monri.API/Monri.API.csproj" />
   <Project Path="Monri.Core/Monri.Core.csproj" />
   <Project Path="Monri.Data/Monri.Data.csproj" />

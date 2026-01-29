@@ -1,4 +1,5 @@
-﻿using Monri.Core.Services;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Monri.Core.Services;
 using Monri.MVC.Models;
 using Monri.MVC.Services;
 using Serilog;
@@ -19,7 +20,9 @@ namespace Monri.MVC.Configurations
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddHttpClient();
-
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo("/keys"))
+                .SetApplicationName("MonriApp");
             ConfigureLogger(builder);
             ConfigureServices(builder.Services);
         }

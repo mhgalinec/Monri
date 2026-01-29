@@ -1,4 +1,5 @@
-﻿using Monri.API.Middleware;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Monri.API.Middleware;
 using Monri.API.Models;
 using Monri.API.Services;
 using Monri.Core.Services;
@@ -27,7 +28,9 @@ namespace Monri.API.Configurations
             builder.Services.Configure<AppSettings>(
                 builder.Configuration.GetSection("AppSettings"));
             builder.Services.AddHttpClient();
-
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo("/keys"))
+                .SetApplicationName("MonriApp");
             ConfigureLogger(builder);
             ConfigureServices(builder.Services);
             ConfigureRepositories(builder.Services, builder.Configuration);
@@ -38,6 +41,12 @@ namespace Monri.API.Configurations
         {
             // Configure the HTTP request pipeline.
             app.UseMiddleware<ErrorMiddleware>();
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin();
+                builder.AllowAnyHeader();
+                builder.AllowAnyMethod();
+            });
             app.UseAuthorization();
             app.MapControllers();
         }

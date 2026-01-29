@@ -1,0 +1,75 @@
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "5zNJ6vY9Vob52UMUTrio"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P \"$${SA_PASSWORD}\" -Q \"SELECT 1\" || exit 1"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./db/scripts:/scripts:ro
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        echo "Waiting for SQL Server to be available..."
+        until /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P '5zNJ6vY9Vob52UMUTrio' -Q "SELECT 1" > /dev/null 2>&1; do
+          sleep 2
+        done
+        echo "Running init script..."
+        /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P '5zNJ6vY9Vob52UMUTrio' -i /scripts/init.sql
+        echo "DB init complete."
+
+  monri_api:
+    build:
+      context: .
+      dockerfile: Monri.API/Dockerfile
+    image: monriapi
+    depends_on:
+      - sqlserver
+      - db-init
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionSettings__SQLConnectionString: "Server=sqlserver,1433;Database=Monri;User Id=sa;Password=5zNJ6vY9Vob52UMUTrio;TrustServerCertificate=true"
+    ports:
+      - "5000:8080"
+    volumes:
+      - ./logs:/logs
+      - ./keys:/keys
+
+  monri_mvc:
+    build:
+      context: .
+      dockerfile: Monri.MVC/Dockerfile
+    image: monrimvc
+    depends_on:
+      - monri_api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      AppSettings__BaseUrl: "http://monri_api:8080/api"
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./logs:/logs
+      - ./keys:/keys
+
+volumes:
+  sql_data:

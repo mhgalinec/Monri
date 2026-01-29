@@ -41,7 +41,7 @@ namespace Monri.MVC.Controllers
                 TempData["SuccessMessage"] = "Data was successfully sent";
                 return RedirectToAction("Index");
             }
-
+            _logger.LogInformation("Message " + result.Error.Message);
             TempData["ErrorMessage"] = result.Error.Message;
             return View("Index", model);
 
