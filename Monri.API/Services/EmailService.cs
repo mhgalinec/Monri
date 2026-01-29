@@ -4,6 +4,7 @@ using Monri.Core.Models;
 using Monri.Core.Models.DTOs;
 using System.Net;
 using System.Net.Mail;
+using System.Text;
 
 namespace Monri.API.Services
 {
@@ -41,19 +42,30 @@ namespace Monri.API.Services
             mail.Subject = "The Form has been submitted";
             mail.IsBodyHtml = true;
 
-            mail.Body = $@"
-                <h3>Form Data</h3>
-                Ime: {user.FirstName}<br/>
-                Prezime: {user.LastName}<br/>
-                Email: {user.Email}<br/><br/>
+            var sb = new StringBuilder();
 
-                <h3>Additional Info</h3>
-                Name: {user.Name}<br/>
-                Username: {user.Username}<br/>
-                Phone: {user.Phone}<br/>
-                Website: {user.Website}<br/>
-                {(user.Address != null ? $"Address: {user.Address.Street}, {user.Address.Suite}, {user.Address.City}, {user.Address.Zipcode}<br/>" : "")}
-                {(user.Company != null ? $"Company: {user.Company.Name}, {user.Company.CatchPhrase}, {user.Company.Bs}<br/>" : "")}";
+            sb.AppendLine("<h3>Form Data</h3>");
+            sb.AppendLine($"Ime: {user.FirstName}<br/>");
+            sb.AppendLine($"Prezime: {user.LastName}<br/>");
+            sb.AppendLine($"Email: {user.Email}<br/><br/>");
+
+            sb.AppendLine("<h3>Additional Info</h3>");
+            sb.AppendLine($"Name: {user.Name}<br/>");
+            sb.AppendLine($"Username: {user.Username}<br/>");
+            sb.AppendLine($"Phone: {user.Phone}<br/>");
+            sb.AppendLine($"Website: {user.Website}<br/>");
+
+            if (user.Address != null)
+            {
+                sb.AppendLine($"Address: {user.Address.Street}, {user.Address.Suite}, {user.Address.City}, {user.Address.Zipcode}<br/>");
+            }
+
+            if (user.Company != null)
+            {
+                sb.AppendLine($"Company: {user.Company.Name}, {user.Company.CatchPhrase}, {user.Company.Bs}<br/>");
+            }
+
+            mail.Body = sb.ToString();
 
             _logger.LogInformation($"Sending Email for {user.Email}");
 
