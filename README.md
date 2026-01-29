@@ -12,7 +12,17 @@ Before running the projects, you need to set up your **SQL Server** database. Fo
 2. **Run the necessary scripts** to create tables and stored procedures.
 
 ```sql
-CREATE TABLE Geo (
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'Monri')
+BEGIN
+    CREATE DATABASE Monri;
+END
+GO
+
+USE Monri;
+GO
+IF OBJECT_ID('Geo', 'U') IS NULL
+BEGIN
+    CREATE TABLE Geo (
     Id INT IDENTITY PRIMARY KEY,
     Latitude NVARCHAR(50) NOT NULL,
     Longitude NVARCHAR(50) NOT NULL,
@@ -25,8 +35,11 @@ CREATE TABLE Geo (
     DeletedBy UNIQUEIDENTIFIER NULL,
     IsActive BIT NOT NULL DEFAULT 1
 );
-
-CREATE TABLE Address (
+END
+GO
+IF OBJECT_ID('Address', 'U') IS NULL
+BEGIN
+    CREATE TABLE Address (
     Id INT IDENTITY PRIMARY KEY,
     Street NVARCHAR(200) NOT NULL,
     Suite NVARCHAR(100) NOT NULL,
@@ -47,8 +60,12 @@ CREATE TABLE Address (
         REFERENCES Geo(Id)
         ON DELETE CASCADE
 );
+END
+GO
 
-CREATE TABLE Company (
+IF OBJECT_ID('Company', 'U') IS NULL
+BEGIN
+    CREATE TABLE Company (
     Id INT IDENTITY PRIMARY KEY,
     Name NVARCHAR(200) NOT NULL,
     CatchPhrase NVARCHAR(300) NOT NULL,
@@ -62,8 +79,12 @@ CREATE TABLE Company (
     DeletedBy UNIQUEIDENTIFIER NULL,
     IsActive BIT NOT NULL DEFAULT 1
 );
+END
+GO
 
-CREATE TABLE Users (
+IF OBJECT_ID('Users', 'U') IS NULL
+BEGIN
+    CREATE TABLE Users (
     Id INT IDENTITY PRIMARY KEY,
     Name NVARCHAR(100) NULL,
     FirstName NVARCHAR(100) NOT NULL,
@@ -92,9 +113,13 @@ CREATE TABLE Users (
         FOREIGN KEY (CompanyId)
         REFERENCES Company(Id)
 );
+END
+GO
 
--- Create stored procedure for submission check
-CREATE PROCEDURE [dbo].[SubmissionCheck]
+IF OBJECT_ID('SubmissionCheck', 'P') IS NULL
+BEGIN
+    EXEC('
+    CREATE PROCEDURE [dbo].[SubmissionCheck]
     @Email NVARCHAR(100)
 AS
 BEGIN
@@ -114,9 +139,14 @@ BEGIN
         SELECT 0 AS Status;
     END
 END
+    ')
+END
+GO
 
--- Create stored procedure for submission check user insert (with details)
-CREATE PROCEDURE [dbo].[InsertUserWithDetails]
+IF OBJECT_ID('InsertUserWithDetails', 'P') IS NULL
+BEGIN
+    EXEC('
+    CREATE PROCEDURE [dbo].[InsertUserWithDetails]
     @Name NVARCHAR(100),
     @FirstName NVARCHAR(100),
     @LastName NVARCHAR(100),
@@ -176,21 +206,33 @@ BEGIN
     -- Vrati status
     SELECT @Status AS Status;
 END
-
--- Create DB View for users that have an email ending in .biz
-CREATE VIEW UsersWithBizEmail
-AS
-SELECT 
-    *
-FROM Users
-WHERE Email LIKE '%.biz';
+    ')
+END
+GO
 
 
---In the API project replace the connection string with yours
+IF OBJECT_ID('UsersWithBizEmail', 'V') IS  NULL
+BEGIN
+    EXEC('
+        CREATE VIEW UsersWithBizEmail
+        AS
+        SELECT *
+        FROM Users
+        WHERE Email LIKE ''%.biz'';')
+END
+GO
+```
+
+
+
+
+3. **In the API project replace the connection string with yours
+```
 {
   "ConnectionStrings": {
     "DefaultConnection": "{yourDetailsHere}"
   }
 }
+```
 
 
