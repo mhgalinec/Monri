@@ -224,9 +224,9 @@ GO
 ```
 
 
+## Project Setup
 
-
-3. **In the API project replace the connection string with yours
+1. In the API project update the appsettings.Development.json with your connection string
 ```
 {
   "ConnectionStrings": {
@@ -234,5 +234,5 @@ GO
   }
 }
 ```
-
+2. Select the **Startup** launch profile and start the project
 
