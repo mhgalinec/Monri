@@ -27,7 +27,7 @@ IF OBJECT_ID('Address', 'U') IS NULL
 BEGIN
     CREATE TABLE Address (
     Id INT IDENTITY PRIMARY KEY,
-    Street NVARCHAR(200) NOT NULL,
+    Street NVARCHAR(100) NOT NULL,
     Suite NVARCHAR(100) NOT NULL,
     City NVARCHAR(100) NOT NULL,
     Zipcode NVARCHAR(20) NOT NULL,
@@ -53,9 +53,9 @@ IF OBJECT_ID('Company', 'U') IS NULL
 BEGIN
     CREATE TABLE Company (
     Id INT IDENTITY PRIMARY KEY,
-    Name NVARCHAR(200) NOT NULL,
-    CatchPhrase NVARCHAR(300) NOT NULL,
-    Bs NVARCHAR(200) NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    CatchPhrase NVARCHAR(100) NOT NULL,
+    Bs NVARCHAR(100) NOT NULL,
 
     Created DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
     CreatedBy UNIQUEIDENTIFIER NULL,
@@ -197,5 +197,13 @@ END
 GO
 
 
-
-
+IF OBJECT_ID('UsersWithBizEmail', 'V') IS  NULL
+BEGIN
+    EXEC('
+        CREATE VIEW UsersWithBizEmail
+        AS
+        SELECT *
+        FROM Users
+        WHERE Email LIKE ''%.biz'';')
+END
+GO

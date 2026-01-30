@@ -46,6 +46,9 @@
                                    required />
                         </div>
 
+                        <!-- Honeypot Field -->
+                        <input type="text" name="web-address" style="display:none !important;" tabindex="-1" autocomplete="off">
+
                         <!-- Validation / error messages -->
                         <div class="text-danger mb-3">
                             @Html.ValidationSummary()
@@ -78,3 +81,11 @@
         </div>
     </div>
 </div>
+<script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+          if (document.querySelector('input[name="web-address"]').value !== "") {
+            e.preventDefault(); // Stop form submission
+            console.log("Spam bot detected!");
+          }
+    });
+</script>
