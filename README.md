@@ -1,15 +1,19 @@
 # Monri
 
-## Setup  
-
+## Docker Compose Setup  
+There are two ways of starting the project, the docker compose way and the manual setup
+For the docker compose way there are again two ways to do this:
+1. Inside the terminal position yourself inside the root directory of the project, (ex. C:\source\repos\Monri) and execute the **docker-compose up --build** command and open the MVC app inside the browser (http://localhost:5001)
+2. The alternate way is to select the **docker-compose** launch profile inside visual studio and run it. Again navigate to http://localhost:5001 to open the MVC app
+   
 ---
-## Database Setup
+## Manual Setup
 
 Before running the projects, you need to set up your **SQL Server** database. Follow these steps:
 
-1. **Create the database** in your SQL Server instance.  
+1. Create an SQL Server instance.  
 
-2. **Run the necessary scripts** to create tables and stored procedures.
+2. **Run the necessary scripts** to create the tables, stored procedures and view.
 
 ```sql
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'Monri')
@@ -41,7 +45,7 @@ IF OBJECT_ID('Address', 'U') IS NULL
 BEGIN
     CREATE TABLE Address (
     Id INT IDENTITY PRIMARY KEY,
-    Street NVARCHAR(200) NOT NULL,
+    Street NVARCHAR(100) NOT NULL,
     Suite NVARCHAR(100) NOT NULL,
     City NVARCHAR(100) NOT NULL,
     Zipcode NVARCHAR(20) NOT NULL,
@@ -67,9 +71,9 @@ IF OBJECT_ID('Company', 'U') IS NULL
 BEGIN
     CREATE TABLE Company (
     Id INT IDENTITY PRIMARY KEY,
-    Name NVARCHAR(200) NOT NULL,
-    CatchPhrase NVARCHAR(300) NOT NULL,
-    Bs NVARCHAR(200) NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    CatchPhrase NVARCHAR(100) NOT NULL,
+    Bs NVARCHAR(100) NOT NULL,
 
     Created DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
     CreatedBy UNIQUEIDENTIFIER NULL,
